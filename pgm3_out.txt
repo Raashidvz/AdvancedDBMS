@@ -12,4 +12,9 @@
 12. select * from Products WHERE Category like '_u%';
 13. select * from Products order by Price ;
 14. select * from Products where price = (select max(Price) from Products);
-15. 
+15. select * from Customers WHERE Points is not NULL;
+16. select count(*) as TotalCustomers from Customers;
+17. select avg(Price) from Products;
+18. select count(*) from Products where category='Furniture';
+19. select City, count(*) from Customers group by City;
+20. 
