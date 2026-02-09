@@ -2,6 +2,7 @@ USE db;
 
 DROP TABLE IF EXISTS Employees;
 DROP TABLE IF EXISTS Department;
+DROP TABLE IF EXISTS Emp_Backup;
 
 CREATE TABLE Department(
  DeptID INT PRIMARY KEY AUTO_INCREMENT,
@@ -20,12 +21,15 @@ CREATE TABLE Employees(
  FOREIGN KEY(DeptID) REFERENCES Department(DeptID)
 ) ENGINE=InnoDB;
 
-
+DESC Employees;
+DESC Department;
 
 SELECT "Part-1";
 
 INSERT INTO Department VALUES (7,'Engineering','San Francisco');
 INSERT INTO Department (DeptName,Location) VALUES ('HR','Chicago'),('Sales','London'),('Marketing','Austin'),('Operations','Boston'),('Research','Boston');
+
+SELECT * FROM Department;
 
 INSERT INTO Employees(EmpID,FirstName,LastName,JobTitle,Salary) VALUES (101,'Alice','Johnson','Analyst',65000);
 
@@ -38,10 +42,12 @@ INSERT INTO Employees(FirstName,LastName,JobTitle) VALUES ('Zohan','Haibin','Tra
 INSERT INTO Employees(EmpID,FirstName,LastName,Salary) VALUES (201,'Tovino','Thomas',65000);
 
 SELECT * FROM Employees;
+DESC Employees;
 
 CREATE TABLE Emp_Backup AS SELECT * FROM Employees;
 
 SELECT * FROM Emp_Backup;
+DESC Emp_Backup;
 
 INSERT INTO Employees (FirstName,LastName,DeptID) VALUES ('Dulqer','Salman',(SELECT DeptID FROM Department WHERE DeptName = 'Marketing'));
 
@@ -50,7 +56,7 @@ INSERT INTO Employees (EmpID,FirstName,LastName) VALUES (101,'Mahesh','Babu');
 INSERT INTO Employees (FirstName,LastName,HireDate) VALUES ('Allu','Arjun',CURDATE());
 
 SELECT * FROM Employees;
-
+DESC Employees;
 
 SELECT "PART-2";
 
@@ -68,6 +74,7 @@ UPDATE Employees SET LastName='Smith-West' WHERE EmpID=105;
 
 
 SELECT * FROM Employees;
+SELECT * FROM Department;
 
 
 UPDATE Employees SET Salary=Salary+5000 WHERE EmpID IN (SELECT EmpID FROM (SELECT * FROM Employees ORDER BY Salary ASC LIMIT 5) AS t);
@@ -81,7 +88,7 @@ UPDATE Employees SET JobTitle = CONCAT('Global', JobTitle) WHERE DeptID = (Selec
 UPDATE Employees e SET Salary=(SELECT AVG(Salary) FROM Employees WHERE DeptID = e.DeptID);
 
 SELECT * FROM Employees;
-
+DESC Employees;
 
 SELECT "Part-3";
 
@@ -106,6 +113,7 @@ Truncate Emp_Backup;
 
 DELETE FROM Employees WHERE Salary=(SELECT MAX(Salary) FROM Employees);
 
+SELECT * FROM Emp_Backup;
 SELECT * FROM Employees;
 SELECT * FROM Department;
 
