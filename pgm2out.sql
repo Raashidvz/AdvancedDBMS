@@ -15,7 +15,7 @@ CREATE TABLE Employees(
  LastName VARCHAR(50) NOT NULL,
  DeptID INT,
  Salary DECIMAL(10,2),
- HireDate DATE,
+ HireDate DATE DEFAULT (CURRENT_DATE),
  JobTitle VARCHAR(50),
  FOREIGN KEY(DeptID) REFERENCES Department(DeptID)
 ) ENGINE=InnoDB;
