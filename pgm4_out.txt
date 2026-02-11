@@ -1,0 +1,19 @@
+--JOIN--
+
+1. SELECT v.vendor_name, d.district_name FROM Vendors v JOIN Districts d ON v.district_id = d.district_id;
+
+2. SELECT d.district_name, v.vendor_name FROM Districts d LEFT JOIN Vendors v ON d.district_id = v.district_id;
+
+3. SELECT o.order_id, v.vendor_name, d.district_name FROM Orders o LEFT JOIN Vendors v ON o.vendor_id = v.vendor_id LEFT JOIN Districts d ON v.district_id = d.district_id;
+
+4. SELECT d.district_name, COUNT(o.order_id) AS total_orders FROM Districts d LEFT JOIN Vendors v ON d.district_id = v.district_id LEFT JOIN Orders o ON v.vendor_id = o.vendor_id GROUP BY d.district_name;
+
+5. select o1.order_id, o2.order_id as referred_order_id from Orders o1 left join Orders o2 on o1.referrer_order_id=o2.order_id;
+
+6. select v1.vendor_name as Vendor1, v2.vendor_name as Vendor2, v1.district_id from Vendors v1 join Vendors v2 on v1.district_id=v2.district_id and v1.vendor_id < v2.vendor_id;
+
+7. SELECT SUM(o.amount) AS total_revenue
+FROM Orders o
+JOIN Vendors v ON o.vendor_id = v.vendor_id
+JOIN Districts d ON v.district_id = d.district_id
+WHERE d.region = 'Central';
