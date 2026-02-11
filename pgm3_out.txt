@@ -17,4 +17,14 @@
 17. select avg(Price) from Products;
 18. select count(*) from Products where category='Furniture';
 19. select City, count(*) from Customers group by City;
-20. 
+20. select distinct Category from Products where Price > 20000;
+21. select Name , Price*StockQuantity as Total_Value from Products;
+22. select Name from Products where Price between 2000 and 10000;
+23. select Name from Products where Price in (1500,2200,4500);
+24. select * from Customers where Points not between 500 and 1000;
+25. select * from Products where Category not in ("Accessories","Stationary");
+26. select Category, count(*) as TotalCount from Products where StockQuantity > 0 group by Category;
+27. select City, count(*) as customer_count from Customers group by city having count(*) >1;
+28. select Name from Products where Name not in("Laptop") and Price not in (25000);
+29. select concat(FirstName,'  ',LastName) as FullName from Customers;
+30. select * from Customers where Points < 1500 or Points is null;
