@@ -1,0 +1,87 @@
+-- =========================================
+-- Experiment 5 : Views in SQL
+-- =========================================
+
+-- 1. Create a view EmpBasicView showing EmpID, EmpName, Salary
+CREATE VIEW EmpBasicView AS
+SELECT EmpID, EmpName, Salary
+FROM EMPLOYEE;
+
+-- =========================================
+
+-- 2. Create a view of RecentEmployees (Hired after 2020-01-01)
+CREATE VIEW RecentEmployees AS
+SELECT *
+FROM EMPLOYEE
+WHERE HireDate > '2020-01-01';
+
+-- =========================================
+
+-- 3. Create a view with employee name and annual salary
+-- (Monthly salary * 12)
+CREATE VIEW EmpAnnualSalaryView AS
+SELECT EmpName, Salary * 12 AS AnnualSalary
+FROM EMPLOYEE;
+
+-- =========================================
+
+-- 4. Create EmpDeptView (EmpName, DeptName, Location)
+CREATE VIEW EmpDeptView AS
+SELECT E.EmpName, D.DeptName, D.Location
+FROM EMPLOYEE E
+JOIN DEPARTMENT D
+ON E.DeptID = D.DeptID;
+
+-- =========================================
+
+-- 5. Create EmployeeProjectView
+-- (EmpName, ProjectName, HoursWorked)
+CREATE VIEW EmployeeProjectView AS
+SELECT E.EmpName, P.ProjectName, EP.HoursWorked
+FROM EMPLOYEE E
+JOIN EMP_PROJECT EP ON E.EmpID = EP.EmpID
+JOIN PROJECT P ON EP.ProjectID = P.ProjectID;
+
+-- =========================================
+
+-- 6. Create a view with Dept Name, Total Salary, Average Salary
+CREATE VIEW DeptSalaryStats AS
+SELECT D.DeptName,
+       SUM(E.Salary) AS TotalSalary,
+       AVG(E.Salary) AS AverageSalary
+FROM DEPARTMENT D
+JOIN EMPLOYEE E
+ON D.DeptID = E.DeptID
+GROUP BY D.DeptName;
+
+-- =========================================
+
+-- 7. Create HighSalaryEmp view (Salary > 60000)
+CREATE VIEW HighSalaryEmp AS
+SELECT EmpName, Salary
+FROM EMPLOYEE
+WHERE Salary > 60000;
+
+-- =========================================
+
+-- 8. Modify HighSalaryEmp to include EmpID and DeptID
+CREATE OR REPLACE VIEW HighSalaryEmp AS
+SELECT EmpID, EmpName, DeptID, Salary
+FROM EMPLOYEE
+WHERE Salary > 60000;
+
+-- =========================================
+
+-- 9. Increment the salary of employee with ID 101 using the view
+UPDATE HighSalaryEmp
+SET Salary = Salary + 5000
+WHERE EmpID = 101;
+
+-- =========================================
+
+-- 10. Drop the view RecentEmployees
+DROP VIEW RecentEmployees;
+
+-- =========================================
+-- End of Experiment 5
+-- =========================================
