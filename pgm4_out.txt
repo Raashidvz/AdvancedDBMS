@@ -12,8 +12,24 @@
 
 6. select v1.vendor_name as Vendor1, v2.vendor_name as Vendor2, v1.district_id from Vendors v1 join Vendors v2 on v1.district_id=v2.district_id and v1.vendor_id < v2.vendor_id;
 
-7. SELECT SUM(o.amount) AS total_revenue
-FROM Orders o
+7. SELECT SUM(o.amount) AS total_revenue FROM Orders o
 JOIN Vendors v ON o.vendor_id = v.vendor_id
 JOIN Districts d ON v.district_id = d.district_id
 WHERE d.region = 'Central';
+
+8. SELECT c.customer_name, d.district_name FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+JOIN districts d ON c.district_id = d.district_id
+WHERE o.order_amount > 1000;
+
+9. SELECT o.order_id, v.vendor_name FROM orders o JOIN vendors v ON o.vendor_id = v.vendor_id;
+
+10. SELECT * FROM vendors WHERE region = 'North';
+
+--SUBQUERIES--
+
+1. SELECT vendor_name FROM vendors WHERE vendor_id NOT IN ( SELECT vendor_id FROM orders );
+2. SELECT * FROM orders WHERE order_amount = (SELECT MAX(order_amount) FROM orders);
+3. SELECT district_name FROM districts WHERE district_id IN (SELECT district_id FROM vendors GROUP BY district_id HAVING COUNT(vendor_id) > 1);
+4. SELECT * FROM orders WHERE order_amount > (SELECT AVG(order_amount) FROM orders );
+5. SELECT vendor_name FROM vendors v WHERE EXISTS (SELECT 1 FROM orders o WHERE o.vendor_id = v.vendor_id);
