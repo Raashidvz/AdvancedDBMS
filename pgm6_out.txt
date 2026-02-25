@@ -63,3 +63,37 @@ SELECT CalculateGrade(87);
 
 
 3.
+DELIMITER //
+
+CREATE FUNCTION TaxCalculator (emp_ssn CHAR(9))
+RETURNS DECIMAL(12,2)
+DETERMINISTIC
+BEGIN
+    DECLARE monthly_salary DECIMAL(10,2);
+    DECLARE annual_salary DECIMAL(12,2);
+    DECLARE tax DECIMAL(12,2);
+
+    -- Get monthly salary
+    SELECT Salary INTO monthly_salary
+    FROM EMPLOYEE
+    WHERE Ssn = emp_ssn;
+
+    -- Calculate annual salary
+    SET annual_salary = monthly_salary * 12;
+
+    -- Calculate tax
+    IF annual_salary > 500000 THEN
+        SET tax = annual_salary * 0.20;
+    ELSEIF annual_salary >= 300000 THEN
+        SET tax = annual_salary * 0.10;
+    ELSE
+        SET tax = 0;
+    END IF;
+
+    RETURN tax;
+END //
+
+DELIMITER ;
+
+
+SELECT Fname, Lname, Salary as Salary_per_month, (Salary*12) as Annual_salary, TaxCalculator(Ssn) as Tax FROM EMPLOYEE;
