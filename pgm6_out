@@ -1,0 +1,65 @@
+Experiment 6 - Stored Functions
+
+1. 
+DELIMITER //
+
+CREATE FUNCTION CalculateBonus (salary DECIMAL(10,2))
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE bonus DECIMAL(10,2);
+    SET bonus = salary * 0.10;
+    RETURN bonus;
+END //
+
+DELIMITER ;
+
+
+SELECT CalculateBonus(30000);
+
+select Fname, Lname, Salary, CalculateBonus(salary) as BONUS FROM EMPLOYEE;
+
+
+
+2. 
+DELIMITER //
+
+CREATE FUNCTION CalculateGrade (mark INT)
+RETURNS VARCHAR(2)
+DETERMINISTIC
+BEGIN
+    DECLARE grade VARCHAR(2);
+
+    IF mark >= 90 THEN
+        SET grade = 'S';
+    ELSEIF mark >= 85 THEN
+        SET grade = 'A+';
+    ELSEIF mark >= 80 THEN
+        SET grade = 'A';
+    ELSEIF mark >= 75 THEN
+        SET grade = 'B+';
+    ELSEIF mark >= 70 THEN
+        SET grade = 'B';
+    ELSEIF mark >= 65 THEN
+        SET grade = 'C+';
+    ELSEIF mark >= 60 THEN
+        SET grade = 'C';
+    ELSEIF mark >= 55 THEN
+        SET grade = 'D';
+    ELSEIF mark >= 50 THEN
+        SET grade = 'P';
+    ELSE
+        SET grade = 'F';
+    END IF;
+
+    RETURN grade;
+END //
+
+DELIMITER ;
+
+
+SELECT CalculateGrade(87);
+
+
+
+3.
