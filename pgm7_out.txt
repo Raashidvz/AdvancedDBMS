@@ -1,0 +1,90 @@
+Experiment 7 - Stored Procedures
+
+(a).
+DELIMITER $$
+
+CREATE PROCEDURE IssueBook(
+    IN p_BookID INT,
+    IN p_BorrowerName VARCHAR(100)
+)
+BEGIN
+    DECLARE book_status VARCHAR(20);
+
+    -- Check book status
+    SELECT Status INTO book_status
+    FROM Books
+    WHERE BookID = p_BookID;
+
+    IF book_status = 'Available' THEN
+        
+        -- Insert transaction
+        INSERT INTO Transactions(BookID, BorrowerName, IssueDate)
+        VALUES(p_BookID, p_BorrowerName, CURDATE());
+
+        -- Update book status
+        UPDATE Books
+        SET Status = 'Issued'
+        WHERE BookID = p_BookID;
+
+        SELECT 'Book Issued Successfully' AS Message;
+    
+    ELSE
+        SELECT 'Book is Not Available' AS Message;
+    END IF;
+
+END $$
+
+DELIMITER ;
+
+
+CALL IssueBook(102, 'Riya Sharma');
+
+
+
+(b).
+DELIMITER $$
+
+CREATE PROCEDURE ReturnBook(
+    IN p_BookID INT
+)
+BEGIN
+    DECLARE book_status VARCHAR(20);
+    DECLARE latest_transaction INT;
+
+    -- Check status
+    SELECT Status INTO book_status
+    FROM Books
+    WHERE BookID = p_BookID;
+
+    IF book_status = 'Issued' THEN
+        
+        -- Get latest transaction
+        SELECT TransactionID INTO latest_transaction
+        FROM Transactions
+        WHERE BookID = p_BookID
+        ORDER BY IssueDate DESC
+        LIMIT 1;
+
+        -- Delete latest transaction
+        DELETE FROM Transactions
+        WHERE TransactionID = latest_transaction;
+
+        -- Update book status
+        UPDATE Books
+        SET Status = 'Available'
+        WHERE BookID = p_BookID;
+
+        SELECT 'Book Returned Successfully' AS Message;
+
+    ELSE
+        SELECT 'Book is Already Available' AS Message;
+    END IF;
+
+END $$
+
+DELIMITER ;
+
+CALL ReturnBook(101);
+
+
+(c).
