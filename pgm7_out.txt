@@ -88,3 +88,82 @@ CALL ReturnBook(101);
 
 
 (c).
+DELIMITER $$
+
+CREATE PROCEDURE CountIssuedBooks(
+    OUT totalIssued INT
+)
+BEGIN
+    SELECT COUNT(*)
+    INTO totalIssued
+    FROM Books
+    WHERE Status = 'Issued';
+END $$
+
+DELIMITER ;
+
+CALL CountIssuedBooks(@count);
+SELECT @count AS Total_Issued_Books;
+
+
+(d).
+DELIMITER $$
+
+CREATE PROCEDURE GetBorrowedBooks(
+    IN p_BorrowerName VARCHAR(100)
+)
+BEGIN
+    SELECT 
+        B.Title,
+        B.Author,
+        T.IssueDate
+    FROM Books B
+    JOIN Transactions T
+        ON B.BookID = T.BookID
+    WHERE T.BorrowerName = p_BorrowerName;
+END $$
+
+DELIMITER ;
+
+CALL GetBorrowedBooks('Arjun Varma');
+
+
+(e).
+DELIMITER $$
+
+CREATE PROCEDURE CalculateFine(
+    IN p_BookID INT,
+    INOUT FineAmount INT
+)
+BEGIN
+    DECLARE borrowed_days INT;
+    DECLARE issue_date DATE;
+
+    -- Get latest issue date
+    SELECT IssueDate INTO issue_date
+    FROM Transactions
+    WHERE BookID = p_BookID
+    ORDER BY IssueDate DESC
+    LIMIT 1;
+
+    -- Calculate borrowed days
+    SET borrowed_days = DATEDIFF(CURDATE(), issue_date);
+
+    IF borrowed_days > 7 THEN
+        SET FineAmount = (borrowed_days - 7) * 5;
+    ELSE
+        SET FineAmount = 0;
+    END IF;
+
+    SELECT 
+        p_BookID AS BookID,
+        borrowed_days AS Borrowed_Days,
+        FineAmount AS Fine_Amount;
+END $$
+
+DELIMITER ;
+
+
+SET @fine = 0;
+CALL CalculateFine(101, @fine);
+SELECT @fine AS Total_Fine;
