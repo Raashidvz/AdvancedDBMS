@@ -1,0 +1,112 @@
+1.
+CREATE TABLE Employee_Audit (
+    ssn CHAR(9),
+    action VARCHAR(20),
+    changed_at TIMESTAMP
+);
+
+DELIMITER $$
+
+CREATE TRIGGER after_employee_insert
+AFTER INSERT ON EMPLOYEE
+FOR EACH ROW
+BEGIN
+    INSERT INTO Employee_Audit(ssn, action, changed_at)
+    VALUES (NEW.Ssn, 'INSERT', NOW());
+END$$
+
+DELIMITER ;
+
+-----------
+NSERT INTO EMPLOYEE VALUES ('David','M','Brown',111223333,'1975-03-15','12 Park St, Houston TX','M',35000,333445555,5);
+-----------
+
+
+2.
+DELIMITER $$
+
+CREATE TRIGGER prevent_salary_decrease
+BEFORE UPDATE ON EMPLOYEE
+FOR EACH ROW
+BEGIN
+    IF NEW.Salary < OLD.Salary THEN
+        SET NEW.Salary = OLD.Salary;
+    END IF;
+END$$
+
+DELIMITER ;
+
+-------------
+UPDATE EMPLOYEE SET Salary = 42000 WHERE Ssn = 111223333;
+--------------
+
+3.
+ALTER TABLE EMPLOYEE
+ADD created_date DATETIME;
+
+DELIMITER $$
+
+CREATE TRIGGER set_created_date
+BEFORE INSERT ON EMPLOYEE
+FOR EACH ROW
+BEGIN
+    IF NEW.created_date IS NULL THEN
+        SET NEW.created_date = NOW();
+    END IF;
+END$$
+
+DELIMITER ;
+
+--------------
+INSERT INTO EMPLOYEE (Fname,Minit,Lname,Ssn,Bdate,Address,Sex,Salary,Super_ssn,Dno)  VALUES ('Makri','M','Mathew',122333,'1975-03-15','12 Park St, Houston TX','M',35000,333445555,5);
+-------------
+
+
+4.
+DELIMITER $$
+
+CREATE TRIGGER check_salary_limit
+BEFORE INSERT ON EMPLOYEE
+FOR EACH ROW
+BEGIN
+    IF NEW.Salary > 60000 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error: Salary exceeds maximum department limit.';
+    END IF;
+END$$
+
+DELIMITER ;
+
+----------
+INSERT INTO EMPLOYEE (Fname, Minit, Lname, Ssn, Bdate, Address, Sex, Salary, Super_ssn, Dno) VALUES('Robert','L','King',111111111,'1985-05-10','12 West St, Houston TX','M',70000,333445555,5);
+------------
+
+
+
+5.
+CREATE TABLE Department_Stats (
+    Dnumber INT PRIMARY KEY,
+    Total_Salary_Expenditure DECIMAL(10,2)
+);
+
+DELIMITER $$
+
+CREATE TRIGGER update_salary_after_delete
+AFTER DELETE ON EMPLOYEE
+FOR EACH ROW
+BEGIN
+    UPDATE Department_Stats
+    SET Total_Salary_Expenditure =
+        Total_Salary_Expenditure - OLD.Salary
+    WHERE Dnumber = OLD.Dno;
+END$$
+
+DELIMITER ;
+
+-------------
+DELETE FROM WORKS_ON
+WHERE Essn = 999887777;
+delete from DEPENDENT where Essn=999887777;
+DELETE FROM EMPLOYEE
+WHERE Ssn = 999887777;
+-------------
