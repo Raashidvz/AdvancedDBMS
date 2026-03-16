@@ -1,0 +1,111 @@
+1.
+
+-- Meter readings table
+CREATE TABLE meter_readings (
+    customer_id INT PRIMARY KEY,
+    units_consumed INT
+);
+
+-- Billing summary table
+CREATE TABLE billing_summary (
+    customer_id INT PRIMARY KEY,
+    billed_amount DECIMAL(10,2)
+);
+
+DELIMITER //
+
+CREATE PROCEDURE calculate_bills()
+BEGIN
+    DECLARE done INT DEFAULT 0;
+    DECLARE cust_id INT;
+    DECLARE units INT;
+    DECLARE bill DECIMAL(10,2);
+
+    -- Cursor declaration
+    DECLARE cur CURSOR FOR SELECT customer_id, units_consumed FROM meter_readings;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    OPEN cur;
+
+    read_loop: LOOP
+        FETCH cur INTO cust_id, units;
+        IF done = 1 THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Initialize bill
+        SET bill = 0;
+
+        -- Calculate progressive billing
+        IF units <= 100 THEN
+            SET bill = units * 0.10;
+        ELSEIF units <= 300 THEN
+            SET bill = (100 * 0.10) + ((units - 100) * 0.15);
+        ELSE
+            SET bill = (100 * 0.10) + (200 * 0.15) + ((units - 300) * 0.25);
+        END IF;
+
+        -- Update billing_summary table
+        INSERT INTO billing_summary(customer_id, billed_amount)
+        VALUES (cust_id, bill)
+        ON DUPLICATE KEY UPDATE billed_amount = bill;
+
+    END LOOP;
+
+    CLOSE cur;
+END //
+
+DELIMITER ;
+
+---------
+INSERT INTO meter_readings (customer_id, units_consumed) VALUES (101, 50), (102, 150), (103, 350);
+CALL calculate_bills();
+SELECT * FROM billing_summary;
+---------
+
+2.
+DELIMITER //
+
+CREATE PROCEDURE calculate_cgpa()
+BEGIN
+    DECLARE done INT DEFAULT 0;
+    DECLARE sid INT;
+    DECLARE total_points DECIMAL(10,2);
+    DECLARE total_credits INT;
+
+    -- Cursor for student IDs
+    DECLARE cur CURSOR FOR SELECT DISTINCT student_id FROM student_grades;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    OPEN cur;
+
+    read_loop: LOOP
+        FETCH cur INTO sid;
+        IF done = 1 THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Calculate total weighted points and total credits
+        SELECT SUM(c.credits * g.points), SUM(c.credits)
+        INTO total_points, total_credits
+        FROM student_grades sg
+        JOIN courses c ON sg.course_code = c.course_code
+        JOIN ktu_grade_points g ON sg.grade = g.grade_letter
+        WHERE sg.student_id = sid;
+
+        -- Insert or update CGPA
+        INSERT INTO student_cgpa(student_id, cgpa)
+        VALUES (sid, ROUND(total_points / total_credits, 2))
+        ON DUPLICATE KEY UPDATE cgpa = ROUND(total_points / total_credits, 2);
+
+    END LOOP;
+
+    CLOSE cur;
+END //
+
+DELIMITER ;
+
+
+----------
+CALL calculate_cgpa();
+----------
