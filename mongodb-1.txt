@@ -1,0 +1,138 @@
+1.
+use puzhayoram_eats
+
+2.
+db.createCollection("menu_items")
+
+3.
+db.menu_items.insertOne({
+    item: "Mulaku Bajji",
+    category: "Snacks",
+    price: 15,
+    in_stock: true
+})
+
+4.
+db.menu_items.insertMany([
+    { item: "Kappa & Meen Curry", price: 80, spice_level: "High" },
+    { item: "Beef Fry", price: 120, portion: "Full" },
+    { item: "Parotta", price: 10, type: "Malabar" }
+])
+
+5.
+db.menu_items.insertOne({
+    item: "Chicken Biryani",
+    price: 150,
+    reviews: [
+        { user: "Rahul", rating: 5, comment: "Authentic Kozhikode style!" },
+        { user: "Anjali", rating: 4, comment: "Good, but needs more masala." }
+    ]
+})
+
+6.
+db.orders.insertOne({
+    customer_name: "Sample Customer",
+    items: [
+        { item: "Parotta", quantity: 2 },
+        { item: "Beef Fry", quantity: 1 }
+    ],
+    total_bill: 140,
+    payment_method: "Cash"
+})
+
+7.
+db.menu_items.drop()
+
+
+
+
+db.menu_items.insertMany([
+    { item: "Beef Fry", category: "Non-Veg", price: 120, stock: 15, spice_level: "High" },
+    { item: "Parotta", category: "Bread", price: 10, stock: 50, type: "Malabar", rating: 4 },
+    { item: "Chicken Biryani", category: "Main", price: 150, stock: 10,
+      reviews: [{ user: "Rahul", rating: 5 }], rating: 4.7 },
+    { item: "Veg Meals", category: "Main", price: 70, stock: 20, rating: 4.2 },
+    { item: "Mulaku Bajji", category: "Snacks", price: 15, stock: 0, rating: 4.5 },
+    { item: "Lime Juice", category: "Beverage", price: 20, stock: 30, rating: 4.0 },
+    { item: "Black Tea", category: "Beverage", price: 10, stock: 100, rating: 4.3 },
+    { item: "Fish Curry", category: "Non-Veg", price: 90, stock: 8, spice_level: "Medium" },
+    { item: "Kappa", category: "Main", price: 50, stock: 12, rating: 4.4 },
+    { item: "Pazham Pori", category: "Snacks", price: 15, stock: 5, rating: 4.8 }
+])
+
+
+
+8.
+db.menu_items.find()
+
+9.
+db.menu_items.findOne({ category: "Snacks" })
+
+10.
+db.menu_items.find({ price: 15 })
+
+11.
+db.menu_items.find({ rating: { $gt: 4.5 } })
+
+12.
+db.menu_items.find({ price: { $gte: 50, $lte: 100 } })
+
+13.
+db.menu_items.find(
+    { category: "Main" },
+    { item: 1, price: 1, _id: 0 }
+)
+
+14.
+db.menu_items.find({ category: { $ne: "Beverage" } })
+
+15.
+db.menu_items.updateOne(
+    { item: "Parotta" },
+    { $set: { price: 12 } }
+)
+
+16.
+db.menu_items.updateOne(
+    { item: "Beef Fry" },
+    { $set: { stock: 20 } }
+)
+
+17.
+db.menu_items.updateOne(
+    { item: "Chicken Biryani" },
+    { $set: { is_popular: true } }
+)
+
+18.
+db.menu_items.updateMany(
+    { category: "Beverage" },
+    { $inc: { price: 5 } }
+)
+
+19.
+db.menu_items.updateOne(
+    { item: "Veg Meals" },
+    { $rename: { "rating": "customer_score" } }
+)
+
+20.
+db.menu_items.updateMany(
+    { price: { $gt: 100 } },
+    { $set: { premium: true } }
+)
+
+21.
+db.menu_items.deleteOne({ item: "Mulaku Bajji" })
+
+22.
+db.menu_items.deleteOne({ rating: { $lt: 4.1 } })
+
+23.
+db.menu_items.deleteMany({ category: "Snacks" })
+
+24.
+db.menu_items.deleteOne({ item: "Black Tea" })
+
+25.
+db.menu_items.deleteMany({})
