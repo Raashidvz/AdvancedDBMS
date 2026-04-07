@@ -1,0 +1,147 @@
+1.
+db.products.find({ name: /^Smart/ })
+
+2.
+db.products.find({ name: /Pro/i })
+
+3.
+db.products.find({ specs: /2023/ })
+
+4.
+db.products.find({ tags: /^m/ })
+
+5.
+db.products.find({
+  $or: [
+    { name: /Laptop/ },
+    { name: /Keyboard/ }
+  ]
+})
+
+6.
+db.products.find({ specs: { $not: /Release/ } })
+
+7.
+db.products.countDocuments({ price: { $gt: 100 } })
+
+8.
+db.products.find(
+  { qty: { $lt: 20 } },
+  { name: 1, price: 1, _id: 0 }
+)
+
+9.
+db.products.find().sort({ price: -1 })
+
+10.
+db.products.find().sort({ price: -1 }).limit(3)
+
+11.
+db.products.aggregate([
+  { $group: { _id: null, totalQty: { $sum: "$qty" } } }
+])
+
+12.
+db.products.aggregate([
+  { $group: { _id: null, avgPrice: { $avg: "$price" } } }
+])
+
+13.
+db.createView(
+  "product_stock_view",
+  "products",
+  [
+    {
+      $project: {
+        name: 1,
+        isStockLow: { $lt: ["$qty", 10] }
+      }
+    }
+  ]
+)
+
+14.
+db.products.aggregate([
+  { $group: { _id: null, maxPrice: { $max: "$price" } } }
+])
+
+15.
+db.products.aggregate([
+  { $match: { tags: "tech" } },
+  { $group: { _id: null, totalQty: { $sum: "$qty" } } }
+])
+
+16.
+db.products.aggregate([
+  { $match: { name: /Mini/ } },
+  { $count: "totalMiniProducts" }
+])
+
+17.
+db.products.aggregate([
+  {
+    $group: {
+      _id: "$cat_id",
+      avgPrice: { $avg: "$price" }
+    }
+  }
+])
+
+18.
+db.products.aggregate([
+  {
+    $lookup: {
+      from: "categories",
+      localField: "cat_id",
+      foreignField: "_id",
+      as: "category"
+    }
+  },
+  { $unwind: "$category" },
+  {
+    $project: {
+      name: 1,
+      price: 1,
+      categoryName: "$category.name"
+    }
+  }
+])
+
+19.
+db.products.aggregate([
+  {
+    $project: {
+      name: 1,
+      isModelX: {
+        $regexMatch: {
+          input: "$specs",
+          regex: "Model: X"
+        }
+      }
+    }
+  }
+])
+
+20.
+db.products.find({
+  name: /Speaker/,
+  price: { $gte: 50, $lte: 100 }
+})
+
+21.
+db.products.createIndex({ tags: 1 })
+
+22.
+db.products.createIndex({ cat_id: 1, price: 1, qty: 1 })
+
+23.
+db.products.createIndex({ cat_id: 1, name: 1, price: 1 })
+
+24.
+db.products.createIndex(
+  { qty: 1 },
+  { partialFilterExpression: { qty: { $lte: 5 } } }
+)
+
+25.
+db.products.createIndex({ specs: "text" })
