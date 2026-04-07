@@ -65,6 +65,10 @@ db.products.aggregate([
   { $group: { _id: null, maxPrice: { $max: "$price" } } }
 ])
 
+or 
+
+db.products.find().sort({ price: -1 }).limit(1)
+
 15.
 db.products.aggregate([
   { $match: { tags: "tech" } },
